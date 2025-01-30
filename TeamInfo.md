@@ -10,7 +10,7 @@
 | Captain     |  yhchen6@illinois.edu  |
 | Member1     |        Chia-Chun Hsiao |
 | Member1     |   ch115@illinois.edu   |
-| Member2     |     Yuhan Huang        |
+| Member2     |     Yu-Han Huang       |
 | Member2     |  yuhan23@illinois.edu  |
 | Member3     |        Sophie Huang    |
 | Member3     |  chihyuh3@illinois.edu |
