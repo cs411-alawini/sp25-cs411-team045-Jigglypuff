@@ -1,0 +1,23 @@
+<!-- <p>homepage works!</p> -->
+
+<div class="homepage">
+    <h1>{{ title }} </h1>
+    <p>Explore moveis and their filming locations</p>
+    <!-- <a routerLink="/movie-list">Go to movie</a> -->
+
+<h1 class="movie-list-title">Movie List</h1>
+<ul>
+    <div *ngFor="let movie of movies">
+    <ul class="movie_list">
+     <h3>
+        <a
+        [title]="movie.name"
+        [routerLink]="['/movies', movie.id]"
+        class="movie-link">
+        {{ movie.name }}
+        </a>
+     </h3>
+    </ul>
+    </div>
+</ul>
+</div>
