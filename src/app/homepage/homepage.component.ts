@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { Movie, movies } from '../movie';
+import { Movie, movies } from '../movie'; // import local data
 import { FormsModule } from '@angular/forms';
+import { MovieService } from '../services/movie.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-homepage',
@@ -28,6 +30,8 @@ export class HomepageComponent {
     years: string[] = Array.from(new Set(this.movies.map(movie => movie.year.toString())));
     locations: string[] = Array.from(new Set(this.movies.map(movie => movie.location)));
 
+    constructor(private movieService: MovieService) {}
+
     onFilterChange(): void {
       this.filterMovies();
     }
@@ -51,11 +55,3 @@ export class HomepageComponent {
     }
 
     }
-
-    // constructor(private router: Router){}
-
-    // // hwen clicking the name, navigate to the page.
-    // onMovieClick(movieId: number): void {
-    //   this.router.navigate(['/movies',movieId]);
-//     }
-// }
