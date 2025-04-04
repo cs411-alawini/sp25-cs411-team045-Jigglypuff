@@ -1,59 +1,19 @@
-# CineTravel
+<<<<<<< HEAD
+=======
+# sp25-cs411-team045-Jigglypuff
+This is a template for CS411 project repository. Please make sure that your title follows the convention: [TeamID]-[YourTeamName]. All TeamID should have a three digit coding (i.e. if you are team 20, you should have `team020` as your ID.). You should also make sure that your url for this repository is [sp25-cs411-team000-teamname.git] so TAs can correctly clone your repository and keep them up-to-date.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.8.
+Once you setup your project, please remember to submit your team formation to the team form.
 
-## Development server
+## Permission
+You should make sure you allow TAs to access your repository. You can add TA(s) as a collaborator to your repository.
 
-To start a local development server, run:
+## Preparing for your release
+Eash submission should be in it's own [release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases). Release are specific freezes to your repository. You should submit your commit hash on canvas or google sheet. When tagging your stage, please use the tag `stage.x` where x is the number to represent the stage.
 
-```bash
-ng serve
-```
+## Keeping things up-to-date
+You should make sure you keep your project root files up-to-date. Information for each file/folders are explained.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Code Contribution
+Individual code contribution will be used to evaluate individual contribution to the project.
+>>>>>>> upstream/main
