@@ -66,7 +66,7 @@ body {
 }
 /* title */
 .homepage {
-    background-color: rgb(232, 177, 12);
+    background-color: black;
     text-align: center;
     padding: 30px;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -119,6 +119,7 @@ body {
     margin: 10px 0;
     width: 80%;
     align-items: left;
+    color: #fff;
 }
 
 /* movie URL */
