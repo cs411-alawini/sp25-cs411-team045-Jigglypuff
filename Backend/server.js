@@ -14,28 +14,26 @@ const pool = mysql.createPool({
   database: 'travel'
 });
 
-// 依搜尋條件查詢電影
+// 新增：搜尋電影資料
 app.get('/api/movies', (req, res) => {
-  // 基本查詢語句，使用 WHERE 1=1 方便後續條件串接
   let sql = "SELECT * FROM movie WHERE 1=1";
   const params = [];
   
-  // 如果有搜尋字串，依 name 進行模糊查詢
   if (req.query.search) {
     sql += " AND name LIKE ?";
     params.push(req.query.search + '%');
   }
-  // 如果有指定 genre，則加入條件
+  
   if (req.query.genre) {
     sql += " AND genre = ?";
     params.push(req.query.genre);
   }
-  // 如果有指定 year，則加入條件
+  
   if (req.query.year) {
     sql += " AND year = ?";
     params.push(req.query.year);
   }
-  // 如果有指定 location，則加入條件
+  
   if (req.query.location) {
     sql += " AND location = ?";
     params.push(req.query.location);
@@ -61,6 +59,24 @@ app.get('/api/movies/all', (req, res) => {
     res.json(results);
   });
 });
+
+// stored procedure
+app.get('/api/flights/origins', (req, res) => {
+  pool.query('SELECT DISTINCT Origin FROM flight', (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows.map(r => r.Origin));
+  });
+});
+
+app.get('/api/flights/beforeAvg/:origin', (req, res) => {
+  const origin = req.params.origin;
+  pool.query('CALL GetFlightsBeforeAvg(?)', [origin], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const flights = Array.isArray(results) ? results[0] : [];
+    res.json(flights);
+  });
+});
+
 
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
