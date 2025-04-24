@@ -1,0 +1,25 @@
+<div class="flight-query">
+    <a routerLink="/" class="btn">Home Page</a>
+    <h1>Flights Before Avg Depart Time</h1>
+    <div class="form-group">
+        <select [(ngModel)]="origin">
+            <option value="">-- Select Origin --</option>
+            <option *ngFor="let o of origins" [value]="o">{{ o }}</option>
+        </select>
+        <button (click)="load()">Load</button>
+    </div>
+    <ul class="flight-list">
+        <!-- <li *ngFor="let f of flights">
+            <strong>{{ f.tailnum }}</strong> |
+                {{ f.origin }}→{{ f.dest }} |
+                Dep: {{ f.sched_dep_time }} → Arr: {{ f.sched_arr_time }} |
+                {{ f.name }}
+        </li> -->
+        <li *ngFor="let f of flights">
+            <span class="cell">{{ f.tailnum }}</span>
+            <span class="cell">{{ f.origin }}→{{ f.dest }}</span>
+            <span class="cell">Dep: {{ f.sched_dep_time }}</span>
+            <span class="cell">Arr: {{ f.sched_arr_time }}</span>
+            <span class="cell">{{ f.name }}</span>
+          </li>
+    </ul>

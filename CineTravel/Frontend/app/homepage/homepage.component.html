@@ -1,0 +1,28 @@
+<div class="homepage">
+  <a routerLink="/flights" class="btn">Flight Query</a>
+    <h1>{{ title }}</h1>
+    <p>Explore movies and their filming locations</p>
+
+    <div class="filter-container">
+
+      <label for="year">Year:</label>
+      <select id="year" [(ngModel)]="selectedYear" (change)="onFilterChange()" class="selection">
+        <option value="" class="filter-title">All Years</option>
+        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+      </select>
+    </div>
+    
+    <div class="movie-box">
+      <ul class="movie-list">
+        <li *ngFor="let movie of filteredMovies">
+          <h3>
+            <a [title]="movie.title" class="movie-link">
+              {{ movie.title }}
+            </a>
+          </h3>
+        </li>
+      </ul>
+    
+    </div>
+  </div>
+  
