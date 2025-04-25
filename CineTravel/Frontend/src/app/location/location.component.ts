@@ -57,7 +57,7 @@ import {
       this.movieService.getAllMovies().subscribe(movies => {
         this.filteredMovies = movies.filter(m => m.location === location);
       });
-      // 選好地點後，將地圖中心移到第一部該地點電影的拍攝位置
+      // 選好地點後，將地圖中心移到第一部該地點電影的拍攝
       this.centerMap({ lat: 40.7128, lng: -74.0060 }); // 例如：NYC
     }
   
