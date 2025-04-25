@@ -1,0 +1,34 @@
+<!-- src/app/location/location.component.html -->
+<div class="location-page">
+    <div class="nav-buttons">
+      <a routerLink="/flights" class="btn">Flight Query</a>
+      <a routerLink="/" class="btn">Home Page</a>
+    </div>
+  
+    <h1>{{ title }}</h1>
+  
+    <div class="location-list">
+      <button
+        *ngFor="let loc of locations"
+        (click)="onSelect(loc)"
+        [class.active]="loc === selectedLocation"
+        class="location-btn"
+      >
+        {{ loc }}
+      </button>
+    </div>
+    
+    <!-- 地圖容器 -->
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+  
+    <div *ngIf="selectedLocation" class="results">
+      <h2>Movies filmed in {{ selectedLocation }}:</h2>
+      <ul class="movie-list">
+        <li *ngFor="let m of filteredMovies">
+          {{ m.title }} ({{ m.year }})
+        </li>
+      </ul>
+    </div>
+  </div>
