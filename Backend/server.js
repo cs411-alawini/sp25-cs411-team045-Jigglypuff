@@ -10,7 +10,7 @@ app.use(express.json());
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: '1234',
   database: 'travel'
 });
 
@@ -50,16 +50,22 @@ app.get('/api/movies', (req, res) => {
 
 
 // 新增：取得所有電影資料
+// Backend/server.js
 app.get('/api/movies/all', (req, res) => {
-  const sql = 'SELECT * FROM movie';
+  const sql = 'SELECT * FROM movie';  // 確認這個 table 名稱正確
   pool.query(sql, (err, results) => {
     if (err) {
-      return res.status(500).json({ error: err });
+      // 印出 MySQL 回傳的錯誤訊息、錯誤代碼與執行的 SQL
+      console.error('🎯 SQL Error:', err.code, err.sqlMessage);
+      console.error('📋 Executed SQL:', err.sql);
+      // 回傳一個較簡潔的錯誤給前端
+      return res.status(500).json({ error: 'Database query failed' });
     }
+    // 若成功，印一下回傳筆數方便確認
+    console.log(`✅ Retrieved ${results.length} movies`);
     res.json(results);
   });
 });
-
 // stored procedure
 app.get('/api/flights/origins', (req, res) => {
   pool.query('SELECT DISTINCT Origin FROM flight', (err, rows) => {
