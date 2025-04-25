@@ -1,0 +1,32 @@
+
+
+<a routerLink="/" class="btn">Back to Home Page 🏠</a>
+
+<h2>Explore Movies by City</h2>
+
+<!-- Dropdown to pick city -->
+<select [(ngModel)]="selectedCity" (change)="onCityChange()">
+  <option value="">-- Select a City --</option>
+  <option *ngFor="let city of cities" [value]="city">{{ city | titlecase }}</option>
+</select>
+
+<!-- Display city + flight count ONCE -->
+<div *ngIf="selectedCity && movies.length" class="summary">
+  <h3>📍 {{ selectedCity | titlecase }} — ✈️ {{ movies[0].flight_count }} Flights</h3>
+</div>
+
+<!-- Show list of movies -->
+<table *ngIf="movies.length">
+  <thead>
+    <tr>
+      <th>🎬 Movie</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let movie of movies">
+      <td>{{ movie.Movie }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p *ngIf="!movies.length && selectedCity">No movies found in {{ selectedCity }}</p>

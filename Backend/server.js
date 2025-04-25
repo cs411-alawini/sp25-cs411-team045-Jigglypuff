@@ -9,6 +9,7 @@ app.use(express.json());
 
 const pool = mysql.createPool({
   host: '127.0.0.1',
+  //host: 'localhost',
   user: 'root',
   password: '',
   database: 'travel'
@@ -80,6 +81,52 @@ app.get('/api/flights/beforeAvg/:origin', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     const flights = Array.isArray(results) ? results[0] : [];
     res.json(flights);
+  });
+});
+
+// Better API route in server.js
+app.get('/api/cities', (req, res) => {
+  const sql = `
+    SELECT DISTINCT LOWER(a.City) AS city
+    FROM airport_new a
+    JOIN movie_location_new ml
+    ON LOWER(a.City) = LOWER(ml.Locations)
+    WHERE a.City IS NOT NULL
+    ORDER BY city
+  `;
+
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error('City fetch error:', err);
+      return res.status(500).json({ error: err });
+    }
+    const cities = results.map(row => row.city);
+    res.json(cities);
+  });
+});
+
+// Search movies by city (Location)
+app.get('/api/movies-by-city/:city', (req, res) => {
+  const city = req.params.city.toLowerCase(); // make it case-insensitive
+  const sql = `
+    SELECT ml.Movie, ml.Locations, cf.flight_count
+    FROM movie_location_new ml
+    JOIN (
+      SELECT LOWER(City) AS city_name, COUNT(*) AS flight_count
+      FROM airport_new
+      WHERE City IS NOT NULL
+      GROUP BY LOWER(City)
+    ) cf
+    ON LOWER(ml.Locations) = cf.city_name
+    WHERE cf.city_name = ?
+  `;
+
+  pool.query(sql, [city], (err, results) => {
+    if (err) {
+      console.error('search error:', err);
+      return res.status(500).json({ error: err });
+    }
+    res.json(results);
   });
 });
 
