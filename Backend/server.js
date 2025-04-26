@@ -49,11 +49,19 @@ app.get('/api/movies', (req, res) => {
   });
 });
 
+// 修正: 這個API出現了兩次，移除重複的部分
 app.get('/api/movies/all', (req, res) => {
-  pool.query('SELECT * FROM movie', (err, results) => {
+  const sql = 'SELECT * FROM movie'; 
+  pool.query(sql, (err, results) => {
     if (err) {
-      console.error('查詢錯誤:', err);
-      return res.status(500).json({ error: err.message });
+      console.error('🎯 SQL Error:', err.code, err.sqlMessage);
+      console.error('📋 Executed SQL:', err.sql);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    console.log(`✅ Retrieved ${results.length} movies`);
+    res.json(results);
+  });
+});
 
 app.get('/api/movies/top-by-country/:country', (req, res) => {
   const country = req.params.country.toLowerCase();
@@ -92,19 +100,6 @@ app.get('/api/movie-locations/country-ratings', (req, res) => {
       return res.status(500).json({ error: 'Database query failed' });
     }
     console.log(`✅ Retrieved average movie ratings for ${results.length} countries`);
-    res.json(results);
-  });
-});
-
-app.get('/api/movies/all', (req, res) => {
-  const sql = 'SELECT * FROM movie'; 
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error('🎯 SQL Error:', err.code, err.sqlMessage);
-      console.error('📋 Executed SQL:', err.sql);
-      return res.status(500).json({ error: 'Database query failed' });
-    }
-    console.log(`✅ Retrieved ${results.length} movies`);
     res.json(results);
   });
 });
@@ -195,8 +190,6 @@ app.get('/api/movies-by-city/:city', (req, res) => {
   });
 });
 
-
-
 /**
  * POST   /api/favorites
  * body: { movieId: number, title: string }
@@ -249,9 +242,7 @@ app.delete('/api/favorites/:movieId', (req, res) => {
   );
 });
 
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-
 });
