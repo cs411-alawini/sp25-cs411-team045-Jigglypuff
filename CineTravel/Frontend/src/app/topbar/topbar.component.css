@@ -2,9 +2,9 @@
     position: absolute;
     top: 10px;
     right: 20px;
-  }
+}
   
-  .favorite-button {
+.favorite-button {
     text-decoration: none;
     background-color: transparent;
     color: #555;
@@ -12,10 +12,25 @@
     padding: 4px 8px;
     border-radius: 4px;
     transition: background-color 0.2s;
-  }
+}
   
-  .favorite-button:hover {
+.favorite-button:hover {
     background-color: #eee;
     color: black;
-  }
-  
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #e50914;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background-color: #b2070e;
+}
