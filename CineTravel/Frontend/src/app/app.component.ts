@@ -20,8 +20,7 @@ import { RouterOutlet } from '@angular/router';
 import { Movie } from '../app/movie'
 import { provideHttpClient } from '@angular/common/http';
 import { TopbarComponent } from './topbar/topbar.component';
-import { provideHttpClient } from '@angular/common/http';
-import { movies } from './movie';  // 調整路徑到正確位置
+// import { movies } from './movie';  // 調整路徑到正確位置
 
 @Component({
   selector: 'app-root',
