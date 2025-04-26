@@ -1,5 +1,6 @@
 // src/app/movie.ts
 export interface Movie {
+// <<<<<<< feature/favorite-movie
   id_movies: number,
   title: string,
   vote_average: number,
@@ -8,6 +9,17 @@ export interface Movie {
   month: string,
   day: string,
   director_name: string,
+// =======
+//   id: number;
+//   title: string;
+//   genre: string;
+//   year: number;
+//   director: string;
+//   rating: number;
+//   location: string;  
+//   mainActor: string; 
+//   vote_average?: number;
+// >>>>>>> main
 }
 
 // export const movies: Movie[] = [
