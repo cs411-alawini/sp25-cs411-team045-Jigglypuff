@@ -2,6 +2,10 @@
     <h1>{{ title }}</h1>
     <p>Explore movies and their filming locations</p>
 
+    <app-topbar></app-topbar>
+
+
+    <!--search area-->
     <div class="filter-container">
 
       <label for="year">Year:</label>
@@ -11,6 +15,7 @@
       </select>
     </div>
     
+    <!--movies list -->
     <div class="movie-box">
       <ul class="movie-list">
         <li *ngFor="let movie of filteredMovies">
@@ -19,6 +24,13 @@
               {{ movie.title }}
             </a>
           </h3>
+
+          <!--Like-->
+          <button (click)="toggleLike(movie)" 
+            [ngClass]="likedMovies.includes(movie.id_movies) ? 'liked-button' : 'like-button'">
+              {{ likedMovies.includes(movie.id_movies) ? '❤️ Liked' : '🤍 Like' }}
+          </button>
+          <!-- <span *ngIf="movie.likes !== undefined">{{movie.likes}} </span> -->
         </li>
       </ul>
     

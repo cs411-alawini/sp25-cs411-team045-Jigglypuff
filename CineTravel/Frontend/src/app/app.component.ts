@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { movies } from '../app/movie'
+import { Movie } from '../app/movie'
 import { provideHttpClient } from '@angular/common/http';
+import { TopbarComponent } from './topbar/topbar.component';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +12,5 @@ import { provideHttpClient } from '@angular/common/http';
 })
 export class AppComponent {
   title = 'CineTravel';
-  movieList = movies;
+  movieList: Movie[] = [];
 }

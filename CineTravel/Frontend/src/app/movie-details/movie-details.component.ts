@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Movie, movies } from '../movie';
+import { Movie } from '../movie';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -19,6 +19,7 @@ export class MovieDetailsComponent implements OnInit {
       const movieId = Number(this.route.snapshot.paramMap.get('id'));
 
       // according to movie id, find the movie
-      this.movie = movies.find((movie) => movie.id === movieId)!
+      const movieList: Movie [] = [];
+      this.movie = movieList.find((movie) => movie.id_movies === movieId)!
   }
 }

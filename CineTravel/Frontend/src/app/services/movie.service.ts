@@ -8,12 +8,12 @@ import { Movie } from '../movie';
   providedIn: 'root'
 })
 export class MovieService {
-  // API 基本路徑，依據你的後端設定調整
+
   private apiUrl = 'http://localhost:3000/api/movies';
 
   constructor(private http: HttpClient) {}
 
-  // 若有需要搜尋功能可保留
+  // filtered movies
   filterMovies(filters: { search?: string; genre?: string; year?: string; location?: string }): Observable<Movie[]> {
     let params = new HttpParams();
     if (filters.search) {
@@ -31,8 +31,22 @@ export class MovieService {
     return this.http.get<Movie[]>(this.apiUrl, { params });
   }
 
-  // 新增：取得所有電影
+  // get all the movies
   getAllMovies(): Observable<Movie[]> {
     return this.http.get<Movie[]>(`${this.apiUrl}/all`);
+  }
+
+  // User favorite related 
+  private userApiUrl = 'http://localhost:3000/api/user';
+  getUserFavorites(userId: number): Observable<Movie[]> {
+    return this.http.get<Movie[]>(`${this.userApiUrl}/${userId}/favorites`);
+  }
+  
+  likeMovie(userId: number, movieId: number): Observable<any> {
+    return this.http.post(`${this.userApiUrl}/${userId}/favorites`, { movieId });
+  }
+  
+  unlikeMovie(userId: number, movieId: number): Observable<any> {
+    return this.http.delete(`${this.userApiUrl}/${userId}/favorites/${movieId}`);
   }
 }

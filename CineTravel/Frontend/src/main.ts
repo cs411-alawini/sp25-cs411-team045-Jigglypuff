@@ -10,7 +10,7 @@ import { provideRouter } from '@angular/router';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(RouterModule.forRoot(routes)),
+    // importProvidersFrom(RouterModule.forRoot(routes)),
     provideHttpClient(),
     provideRouter(routes)
   ],
