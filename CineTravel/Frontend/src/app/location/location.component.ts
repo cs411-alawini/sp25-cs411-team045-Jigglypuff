@@ -212,44 +212,112 @@ import {
     }
     
     private markLocation(location: {lat: number, lng: number}, title: string, description: string): void {
-      // 移動地圖中心
-      this.map.setCenter(location);
-      this.map.setZoom(5);
-      
-      // 創建新標記
-      this.marker = new google.maps.Marker({
-        map: this.map,
-        position: location,
-        title: title,
-        animation: google.maps.Animation.DROP
-      });
-      
-      // 獲取該國家的評分
-      const countryRating = this.allCountryRatings.find(
-        r => r.country.toLowerCase() === title.toLowerCase()
-      );
-      const ratingText = countryRating ? `評分: ${countryRating.avg_movie_rating}` : '';
-      
-      // 添加資訊視窗
-      const contentString = `
-        <div>
-          <h3>${title}</h3>
-          <p>${description}</p>
-          <p>${ratingText}</p>
-          <p>座標: ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}</p>
+        // 移動地圖中心
+        this.map.setCenter(location);
+        this.map.setZoom(5);
+        
+        // 創建新標記
+        this.marker = new google.maps.Marker({
+          map: this.map,
+          position: location,
+          title: title,
+          animation: google.maps.Animation.DROP
+        });
+        
+        // 獲取該國家的評分
+        const countryRating = this.allCountryRatings.find(
+          r => r.country.toLowerCase() === title.toLowerCase()
+        );
+        const ratingText = countryRating ? `評分: ${countryRating.avg_movie_rating}` : '';
+        
+        // 先創建一個基本的信息窗口內容
+        let contentString = `
+          <div style="min-width: 200px; padding: 10px; color: #333;">
+            <h3 style="margin-top: 0; color: #111;">${title}</h3>
+            <p>${description}</p>
+            <p>${ratingText}</p>
+            <div id="top-movies-${title.replace(/\s+/g, '-').toLowerCase()}">
+            <p style="color: #666;">正在載入頂級電影...</p>
+            </div>
         </div>
-      `;
-      
-      const infoWindow = new google.maps.InfoWindow({
-        content: contentString
-      });
-      
-      // 點擊標記時顯示資訊視窗
-      this.marker.addListener('click', () => {
+        `;
+        
+        const infoWindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+        
+        // 點擊標記時顯示資訊視窗
+        this.marker.addListener('click', () => {
+          infoWindow.open(this.map, this.marker);
+          
+          // 當信息窗口打開時，獲取頂級電影
+          this.fetchTopMoviesForCountry(title, infoWindow);
+        });
+        
+        // 自動打開資訊視窗
         infoWindow.open(this.map, this.marker);
-      });
+        
+        // 立即獲取頂級電影
+        this.fetchTopMoviesForCountry(title, infoWindow);
+      }
       
-      // 自動打開資訊視窗
-      infoWindow.open(this.map, this.marker);
-    }
+      // 獲取國家頂級電影並更新信息窗口
+      private fetchTopMoviesForCountry(country: string, infoWindow: any): void {
+        // 標準化國家名稱以用於 DOM ID
+        const countryId = country.replace(/\s+/g, '-').toLowerCase();
+        
+        // 調用 API 獲取頂級電影
+        this.http.get<any[]>(`${this.apiUrl}/movies/top-by-country/${country}`)
+          .subscribe({
+            next: (movies) => {
+              if (movies.length === 0) {
+                // 如果沒有電影，更新內容
+                this.updateInfoWindowContent(infoWindow, countryId, '<p style="color: #333; font-style: italic;">沒有找到電影資料</p>');
+                return;
+              }
+              
+              // 創建電影列表 HTML，使用深色文字確保在白色背景上可見
+              let moviesHtml = `
+                <h4 style="margin-bottom: 8px; color: #333;">評分最高的電影:</h4>
+                <ul style="padding-left: 20px; margin-top: 5px; color: #333;">
+              `;
+              
+              movies.forEach((movie, index) => {
+                moviesHtml += `
+                  <li style="margin-bottom: 5px; color: #333;">
+                    <strong style="color: #111;">${movie.title}</strong> (${movie.year}) - 
+                    <span style="color: #d4af37; font-weight: bold;">★ ${movie.vote_average}</span>
+                  </li>
+                `;
+              });
+              
+              moviesHtml += '</ul>';
+              
+              // 更新信息窗口內容
+              this.updateInfoWindowContent(infoWindow, countryId, moviesHtml);
+            },
+            error: (err) => {
+              console.error(`無法獲取 ${country} 的頂級電影:`, err);
+              this.updateInfoWindowContent(
+                infoWindow, 
+                countryId, 
+                '<p style="color: #333; font-style: italic;">無法載入電影資料</p>'
+              );
+            }
+          });
+      }
+      
+      
+      // 更新信息窗口中的特定部分
+      private updateInfoWindowContent(infoWindow: any, countryId: string, newContent: string): void {
+        // 檢查信息窗口是否已經打開
+        if (!infoWindow.getMap()) return;
+        
+        const container = document.getElementById(`top-movies-${countryId}`);
+        if (container) {
+          container.innerHTML = newContent;
+        } else {
+          console.error(`找不到容器 top-movies-${countryId}`);
+        }
+      }
   }

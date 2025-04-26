@@ -11,7 +11,7 @@ const pool = mysql.createPool({
   host: '127.0.0.1',
   //host: 'localhost',
   user: 'root',
-  password: '1234',
+  password: '',
   database: 'travel'
 });
 
@@ -45,6 +45,28 @@ app.get('/api/movies', (req, res) => {
       console.error('查詢錯誤:', err);
       return res.status(500).json({ error: err });
     }
+    res.json(results);
+  });
+});
+
+app.get('/api/movies/top-by-country/:country', (req, res) => {
+  const country = req.params.country.toLowerCase();
+  
+  const sql = `
+    SELECT m.title, m.year, m.vote_average 
+    FROM movie m 
+    JOIN movie_location_global ml ON m.title = ml.Movie 
+    WHERE LOWER(ml.Country) = ?
+    ORDER BY m.vote_average DESC
+    LIMIT 3
+  `;
+  
+  pool.query(sql, [country], (err, results) => {
+    if (err) {
+      console.error('查詢國家頂級電影錯誤:', err);
+      return res.status(500).json({ error: '資料庫查詢失敗' });
+    }
+    console.log(`✅ 獲取 ${country} 評分最高的前三部電影`);
     res.json(results);
   });
 });
