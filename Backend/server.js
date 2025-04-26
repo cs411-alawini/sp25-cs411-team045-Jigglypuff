@@ -49,24 +49,60 @@ app.get('/api/movies', (req, res) => {
   });
 });
 
-
-// 新增：取得所有電影資料
-// Backend/server.js
-app.get('/api/movies/all', (req, res) => {
-  const sql = 'SELECT * FROM movie';  // 確認這個 table 名稱正確
+app.get('/api/movie-locations/country-ratings', (req, res) => {
+  const sql = `
+    SELECT LOWER(ml.Country) AS country, ROUND(AVG(m.vote_average), 2) AS avg_movie_rating 
+    FROM movie m 
+    JOIN movie_location_global ml ON m.title = ml.Movie 
+    GROUP BY LOWER(ml.Country) 
+    ORDER BY avg_movie_rating DESC
+  `;
+  
   pool.query(sql, (err, results) => {
     if (err) {
-      // 印出 MySQL 回傳的錯誤訊息、錯誤代碼與執行的 SQL
+      console.error('查詢國家評分錯誤:', err);
+      return res.status(500).json({ error: '資料庫查詢失敗' });
+    }
+    console.log(`✅ 獲取了 ${results.length} 個國家的平均電影評分`);
+    res.json(results);
+  });
+});
+app.get('/api/movies/all', (req, res) => {
+  const sql = 'SELECT * FROM movie'; 
+  pool.query(sql, (err, results) => {
+    if (err) {
       console.error('🎯 SQL Error:', err.code, err.sqlMessage);
       console.error('📋 Executed SQL:', err.sql);
-      // 回傳一個較簡潔的錯誤給前端
       return res.status(500).json({ error: 'Database query failed' });
     }
-    // 若成功，印一下回傳筆數方便確認
     console.log(`✅ Retrieved ${results.length} movies`);
     res.json(results);
   });
 });
+
+app.get('/api/movie-locations/country-ratings/filter', (req, res) => {
+  const minRating = parseFloat(req.query.minRating) || 0;
+  const maxRating = parseFloat(req.query.maxRating) || 10;
+  
+  const sql = `
+    SELECT LOWER(ml.Country) AS country, ROUND(AVG(m.vote_average), 2) AS avg_movie_rating 
+    FROM movie m 
+    JOIN movie_location_global ml ON m.title = ml.Movie 
+    GROUP BY LOWER(ml.Country) 
+    HAVING avg_movie_rating >= ? AND avg_movie_rating <= ?
+    ORDER BY avg_movie_rating ASC
+  `;
+  
+  pool.query(sql, [minRating, maxRating], (err, results) => {
+    if (err) {
+      console.error('查詢國家評分錯誤:', err);
+      return res.status(500).json({ error: '資料庫查詢失敗' });
+    }
+    console.log(`✅ 獲取了 ${results.length} 個國家的評分（評分範圍: ${minRating}-${maxRating}）`);
+    res.json(results);
+  });
+});
+
 // stored procedure
 app.get('/api/flights/origins', (req, res) => {
   pool.query('SELECT DISTINCT Origin FROM flight', (err, rows) => {

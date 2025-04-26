@@ -1,4 +1,4 @@
-<!-- src/app/location/location.component.html -->
+<!-- 在地圖和按鈕之間添加過濾功能 -->
 <div class="location-page">
     <div class="nav-buttons">
       <a routerLink="/flights" class="btn">Flight Query</a>
@@ -6,29 +6,43 @@
     </div>
   
     <h1>{{ title }}</h1>
-  
-    <div class="location-list">
-      <button
-        *ngFor="let loc of locations"
-        (click)="onSelect(loc)"
-        [class.active]="loc === selectedLocation"
-        class="location-btn"
-      >
-        {{ loc }}
-      </button>
-    </div>
     
     <!-- 地圖容器 -->
     <div class="map-container">
       <div id="map"></div>
     </div>
+    
+    <!-- 添加評分過濾器 -->
+    <div class="rating-filter">
+      <div class="filter-container">
+        <div class="filter-item">
+          <label for="minRating">最低評分:</label>
+          <input type="number" id="minRating" [(ngModel)]="minRating" min="0" max="10" step="0.1">
+        </div>
+        
+        <div class="filter-item">
+          <label for="maxRating">最高評分:</label>
+          <input type="number" id="maxRating" [(ngModel)]="maxRating" min="0" max="10" step="0.1">
+        </div>
+        
+        <button class="filter-btn" (click)="filterByRating()">查詢</button>
+      </div>
+    </div>
   
-    <div *ngIf="selectedLocation" class="results">
-      <h2>Movies filmed in {{ selectedLocation }}:</h2>
-      <ul class="movie-list">
-        <li *ngFor="let m of filteredMovies">
-          {{ m.title }} ({{ m.year }})
-        </li>
-      </ul>
+    <div class="location-list">
+      <!-- 國家按鈕 -->
+      <button
+        *ngFor="let rating of countryRatings"
+        (click)="onSelectCountry(rating.country)"
+        [class.active]="rating.country === selectedCountry"
+        class="location-btn"
+      >
+        <span class="country-name">{{ rating.country | titlecase }}</span>
+        <span class="rating-value">{{ rating.avg_movie_rating }}</span>
+      </button>
+    </div>
+  
+    <div *ngIf="selectedCountry" class="results">
+      <h2>Selected country: {{ selectedCountry | titlecase }}</h2>
     </div>
   </div>

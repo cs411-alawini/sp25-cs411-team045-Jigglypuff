@@ -8,6 +8,7 @@ export interface Movie {
   rating: number;
   location: string;  
   mainActor: string; 
+  vote_average?: number;
 }
 
 export const movies: Movie[] = [
