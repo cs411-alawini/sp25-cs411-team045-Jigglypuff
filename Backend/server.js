@@ -15,7 +15,6 @@ const pool = mysql.createPool({
   database: 'travel'
 });
 
-// 新增：搜尋電影資料
 app.get('/api/movies', (req, res) => {
   let sql = "SELECT * FROM movie WHERE 1=1";
   const params = [];
@@ -63,10 +62,10 @@ app.get('/api/movies/top-by-country/:country', (req, res) => {
   
   pool.query(sql, [country], (err, results) => {
     if (err) {
-      console.error('查詢國家頂級電影錯誤:', err);
-      return res.status(500).json({ error: '資料庫查詢失敗' });
+      console.error('Error querying top movies by country:', err);
+      return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ 獲取 ${country} 評分最高的前三部電影`);
+    console.log(`✅ Retrieved top ${results.length} movies for ${country}`);
     res.json(results);
   });
 });
@@ -82,13 +81,14 @@ app.get('/api/movie-locations/country-ratings', (req, res) => {
   
   pool.query(sql, (err, results) => {
     if (err) {
-      console.error('查詢國家評分錯誤:', err);
-      return res.status(500).json({ error: '資料庫查詢失敗' });
+      console.error('Error querying country ratings:', err);
+      return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ 獲取了 ${results.length} 個國家的平均電影評分`);
+    console.log(`✅ Retrieved average movie ratings for ${results.length} countries`);
     res.json(results);
   });
 });
+
 app.get('/api/movies/all', (req, res) => {
   const sql = 'SELECT * FROM movie'; 
   pool.query(sql, (err, results) => {
@@ -117,10 +117,10 @@ app.get('/api/movie-locations/country-ratings/filter', (req, res) => {
   
   pool.query(sql, [minRating, maxRating], (err, results) => {
     if (err) {
-      console.error('查詢國家評分錯誤:', err);
-      return res.status(500).json({ error: '資料庫查詢失敗' });
+      console.error('Error filtering country ratings:', err);
+      return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ 獲取了 ${results.length} 個國家的評分（評分範圍: ${minRating}-${maxRating}）`);
+    console.log(`✅ Retrieved ${results.length} countries with ratings (range: ${minRating}-${maxRating})`);
     res.json(results);
   });
 });
