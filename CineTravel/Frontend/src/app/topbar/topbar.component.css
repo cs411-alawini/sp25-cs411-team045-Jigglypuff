@@ -1,0 +1,21 @@
+.topbar {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+  }
+  
+  .favorite-button {
+    text-decoration: none;
+    background-color: transparent;
+    color: #555;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .favorite-button:hover {
+    background-color: #eee;
+    color: black;
+  }
+  

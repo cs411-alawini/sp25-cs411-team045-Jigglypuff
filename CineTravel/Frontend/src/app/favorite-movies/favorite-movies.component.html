@@ -1,0 +1,30 @@
+<div class="homepage">
+    <h1>Favorite Movies</h1>
+    <p>Your collection of favorite films</p>
+  
+    <app-topbar></app-topbar>
+    <!-- movie list -->
+    <div class="movie-box">
+      <ul class="movie-list">
+        <li *ngFor="let movie of favoriteMovies">
+          <h3>
+            <a [title]="movie.title" class="movie-link">
+              <p>{{ movie.title }}</p>
+            </a>
+          </h3>
+  
+          <!-- Remove button-->
+          <button (click)="removeFavorite(movie.id_movies)" class="remove-button">
+            ❤️ Liked
+          </button>
+        </li>
+        <!-- <button class="clear" (click)="clearFavorites()">Clear my favorites</button> -->
+
+        <!-- empty state -->
+        <li *ngIf="favoriteMovies.length === 0" class="empty-state">
+          <p>You have no favorite movies yet.</p>
+          <a routerLink="/">Explore movies</a>
+        </li>
+      </ul>
+    </div>
+  </div>

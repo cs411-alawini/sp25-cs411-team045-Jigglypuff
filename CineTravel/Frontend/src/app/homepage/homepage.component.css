@@ -136,3 +136,23 @@ body {
 .movie-link:hover {
     background-color: #444;
 }
+
+.like-button, .liked-button {
+  padding: 8px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background-color 0.3s;
+}
+
+.like-button {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.liked-button {
+  background-color: #ff4081;
+  color: white;
+}
