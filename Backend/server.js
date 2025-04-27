@@ -62,7 +62,26 @@ app.get('/api/movies/all', (req, res) => {
     res.json(results);
   });
 });
-
+app.get('/api/hotels/top-by-country/:country', (req, res) => {
+  const country = req.params.country.toLowerCase();
+  
+  const sql = `
+    SELECT Hotel_Name, Hotel_Address, Average_Score, City 
+    FROM hotels 
+    WHERE LOWER(Hotel_country) = ?
+    ORDER BY Average_Score DESC
+    LIMIT 3
+  `;
+  
+  pool.query(sql, [country], (err, results) => {
+    if (err) {
+      console.error('Error querying top hotels by country:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    console.log(`✅ Retrieved top ${results.length} hotels for ${country}`);
+    res.json(results);
+  });
+});
 app.get('/api/movies/top-by-country/:country', (req, res) => {
   const country = req.params.country.toLowerCase();
   

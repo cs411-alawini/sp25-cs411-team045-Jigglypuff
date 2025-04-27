@@ -148,41 +148,41 @@ import {
     
     private findAndMarkLocation(countryName: string): void {
       if (!this.map) {
-        console.error('地圖尚未初始化');
+        console.error('Map not initialized');
         return;
       }
       
-
+      // Remove previous marker (if exists)
       if (this.marker) {
         this.marker.setMap(null);
       }
       
-
+      // First try using default country coordinates
       const normalizedCountry = countryName.toLowerCase();
       if (this.countryCoordinates[normalizedCountry]) {
-        console.log(`使用預設座標標記 ${countryName}`);
+        console.log(`Using default coordinates for ${countryName}`);
         this.markLocation(
           this.countryCoordinates[normalizedCountry], 
           countryName,
-          `${countryName} (預設座標)`
+          `${countryName} (Default coordinates)`
         );
         return;
       }
       
-
+      // If default coordinates don't exist, try using Geocoding API
       if (!google.maps.Geocoder) {
-        console.error('Geocoder 服務不可用');
+        console.error('Geocoder service not available');
         return;
       }
       
-      console.log(`嘗試地理編碼: ${countryName}`);
+      console.log(`Attempting geocoding for: ${countryName}`);
       const geocoder = new google.maps.Geocoder();
       
       geocoder.geocode(
-        { 'address': countryName + ' country' }, 
+        { 'address': countryName + ' country' }, // Add 'country' keyword to improve success rate
         (results: any, status: any) => {
           if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
-            console.log(`成功地理編碼 ${countryName}`);
+            console.log(`Successfully geocoded ${countryName}`);
             const location = results[0].geometry.location;
             const formattedAddress = results[0].formatted_address;
             
@@ -192,122 +192,179 @@ import {
               formattedAddress
             );
           } else {
-            console.error(`地理編碼失敗: ${status} for ${countryName}`);
+            console.error(`Geocoding failed: ${status} for ${countryName}`);
             
-
+            // Create a fallback location if no default coordinates and geocoding fails
             const fallbackLocation = { lat: 0, lng: 0 };
             this.markLocation(
               fallbackLocation,
               countryName,
-              `${countryName} (地理編碼失敗)`
+              `${countryName} (Geocoding failed)`
             );
             
-            alert(`無法定位 "${countryName}"。使用通用位置代替。`);
+            // Display error message
+            alert(`Unable to locate "${countryName}". Using generic location instead.`);
           }
         }
       );
     }
     
     private markLocation(location: {lat: number, lng: number}, title: string, description: string): void {
-
-        this.map.setCenter(location);
-        this.map.setZoom(5);
-        
-
-        this.marker = new google.maps.Marker({
-          map: this.map,
-          position: location,
-          title: title,
-          animation: google.maps.Animation.DROP
-        });
-        
-        // 獲取該國家的評分
-        const countryRating = this.allCountryRatings.find(
-          r => r.country.toLowerCase() === title.toLowerCase()
-        );
-        const ratingText = countryRating ? `Rating: ${countryRating.avg_movie_rating}` : '';
-        
-
-        let contentString = `
-          <div style="min-width: 200px; padding: 10px; color: #333;">
-            <h3 style="margin-top: 0; color: #111;">${title}</h3>
-            <p>${ratingText}</p>
-            <div id="top-movies-${title.replace(/\s+/g, '-').toLowerCase()}">
-            <p style="color: #666;">Loading Movie...</p>
-            </div>
-        </div>
-        `;
-        
-        const infoWindow = new google.maps.InfoWindow({
-          content: contentString
-        });
-        
-        this.marker.addListener('click', () => {
-          infoWindow.open(this.map, this.marker);
+      // Move map center
+      this.map.setCenter(location);
+      this.map.setZoom(5);
+      
+      // Create new marker
+      this.marker = new google.maps.Marker({
+        map: this.map,
+        position: location,
+        title: title,
+        animation: google.maps.Animation.DROP
+      });
+      
+      // Get country rating
+      const countryRating = this.allCountryRatings.find(
+        r => r.country.toLowerCase() === title.toLowerCase()
+      );
+      const ratingText = countryRating ? `Rating: ${countryRating.avg_movie_rating}` : '';
+      
+      // Create basic info window content
+      let contentString = `
+        <div style="min-width: 350px; padding: 10px; color: #333;">
+          <h3 style="margin-top: 0; color: #111;">${title}</h3>
+          <p>${ratingText}</p>
           
-          this.fetchTopMoviesForCountry(title, infoWindow);
-        });
-        
+          <div style="display: flex; justify-content: space-between;">
+            <div style="width: 48%;">
+              <h4 style="color: #111; margin-bottom: 8px;">Top Movies</h4>
+              <div id="top-movies-${title.replace(/\s+/g, '-').toLowerCase()}" style="margin-bottom: 10px;">
+                <p style="color: #666;">Loading movie data...</p>
+              </div>
+            </div>
+            
+            <div style="width: 48%;">
+              <h4 style="color: #111; margin-bottom: 8px;">Top Hotels</h4>
+              <div id="top-hotels-${title.replace(/\s+/g, '-').toLowerCase()}" style="margin-bottom: 10px;">
+                <p style="color: #666;">Loading hotel data...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      const infoWindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+      
+      // Show info window when marker is clicked
+      this.marker.addListener('click', () => {
         infoWindow.open(this.map, this.marker);
         
-        this.fetchTopMoviesForCountry(title, infoWindow);
-      }
+        // Fetch top movies and hotels when info window opens
+        this.fetchTopContentForCountry(title, infoWindow);
+      });
       
-      private fetchTopMoviesForCountry(country: string, infoWindow: any): void {
-
-        const countryId = country.replace(/\s+/g, '-').toLowerCase();
-        
-
-        this.http.get<any[]>(`${this.apiUrl}/movies/top-by-country/${country}`)
-          .subscribe({
-            next: (movies) => {
-              if (movies.length === 0) {
-
-                this.updateInfoWindowContent(infoWindow, countryId, '<p style="color: #333; font-style: italic;">沒有找到電影資料</p>');
-                return;
-              }
-              
-
-              let moviesHtml = `
-                <h4 style="margin-bottom: 8px; color: #333;">Highest :</h4>
-                <ul style="padding-left: 20px; margin-top: 5px; color: #333;">
-              `;
-              
-              movies.forEach((movie, index) => {
-                moviesHtml += `
-                  <li style="margin-bottom: 5px; color: #333;">
-                    <strong style="color: #111;">${movie.title}</strong> (${movie.year}) - 
-                    <span style="color: #d4af37; font-weight: bold;">★ ${movie.vote_average}</span>
-                  </li>
-                `;
-              });
-              
-              moviesHtml += '</ul>';
-              
-              this.updateInfoWindowContent(infoWindow, countryId, moviesHtml);
-            },
-            error: (err) => {
-              console.error(`無法獲取 ${country} 的頂級電影:`, err);
+      // Automatically open info window
+      infoWindow.open(this.map, this.marker);
+      
+      // Immediately fetch top movies and hotels
+      this.fetchTopContentForCountry(title, infoWindow);
+    }
+    
+    // Fetch top movies and hotels for a country and update info window
+    private fetchTopContentForCountry(country: string, infoWindow: any): void {
+      // Standardize country name for DOM ID
+      const countryId = country.replace(/\s+/g, '-').toLowerCase();
+      
+      // Fetch top movies
+      this.http.get<any[]>(`${this.apiUrl}/movies/top-by-country/${country}`)
+        .subscribe({
+          next: (movies) => {
+            if (movies.length === 0) {
               this.updateInfoWindowContent(
                 infoWindow, 
-                countryId, 
-                '<p style="color: #333; font-style: italic;">Cant Load Movie</p>'
+                `top-movies-${countryId}`, 
+                '<p style="color: #666; font-style: italic;">No movie data found</p>'
               );
+              return;
             }
-          });
-      }
+            
+            // Create movie list HTML
+            let moviesHtml = `<ul style="padding-left: 20px; margin-top: 5px; color: #333;">`;
+            
+            movies.forEach((movie) => {
+              moviesHtml += `
+                <li style="margin-bottom: 5px;">
+                  <strong style="color: #111;">${movie.title}</strong> (${movie.year}) - 
+                  <span style="color: #d4af37; font-weight: bold;">★ ${movie.vote_average}</span>
+                </li>
+              `;
+            });
+            
+            moviesHtml += '</ul>';
+            
+            this.updateInfoWindowContent(infoWindow, `top-movies-${countryId}`, moviesHtml);
+          },
+          error: (err) => {
+            console.error(`Unable to fetch top movies for ${country}:`, err);
+            this.updateInfoWindowContent(
+              infoWindow, 
+              `top-movies-${countryId}`, 
+              '<p style="color: #666; font-style: italic;">Unable to load movie data</p>'
+            );
+          }
+        });
       
+      // Fetch top hotels
+      this.http.get<any[]>(`${this.apiUrl}/hotels/top-by-country/${country}`)
+        .subscribe({
+          next: (hotels) => {
+            if (hotels.length === 0) {
+              this.updateInfoWindowContent(
+                infoWindow, 
+                `top-hotels-${countryId}`, 
+                '<p style="color: #666; font-style: italic;">No hotel data found</p>'
+              );
+              return;
+            }
+            
+            // Create hotel list HTML
+            let hotelsHtml = `<ul style="padding-left: 20px; margin-top: 5px; color: #333;">`;
+            
+            hotels.forEach((hotel) => {
+              hotelsHtml += `
+                <li style="margin-bottom: 5px;">
+                  <strong style="color: #111;">${hotel.Hotel_Name}</strong> (${hotel.City}) - 
+                  <span style="color: #d4af37; font-weight: bold;">★ ${hotel.Average_Score}</span>
+                </li>
+              `;
+            });
+            
+            hotelsHtml += '</ul>';
+            
+            this.updateInfoWindowContent(infoWindow, `top-hotels-${countryId}`, hotelsHtml);
+          },
+          error: (err) => {
+            console.error(`Unable to fetch top hotels for ${country}:`, err);
+            this.updateInfoWindowContent(
+              infoWindow, 
+              `top-hotels-${countryId}`, 
+              '<p style="color: #666; font-style: italic;">Unable to load hotel data</p>'
+            );
+          }
+        });
+    }
+    
+    // Update specific content in the info window
+    private updateInfoWindowContent(infoWindow: any, elementId: string, newContent: string): void {
+      // Check if info window is open
+      if (!infoWindow.getMap()) return;
       
-
-      private updateInfoWindowContent(infoWindow: any, countryId: string, newContent: string): void {
-
-        if (!infoWindow.getMap()) return;
-        
-        const container = document.getElementById(`top-movies-${countryId}`);
-        if (container) {
-          container.innerHTML = newContent;
-        } else {
-          console.error(`找不到容器 top-movies-${countryId}`);
-        }
+      const container = document.getElementById(elementId);
+      if (container) {
+        container.innerHTML = newContent;
+      } else {
+        console.error(`Container not found: ${elementId}`);
       }
+    }
   }
