@@ -20,9 +20,14 @@ app.get('/api/movies', (req, res) => {
   let sql = "SELECT * FROM movie WHERE 1=1";
   const params = [];
   
+  // if (req.query.search) {
+  //   sql += " AND name LIKE ?";
+  //   params.push(req.query.search + '%');
+  // }
   if (req.query.search) {
-    sql += " AND name LIKE ?";
-    params.push(req.query.search + '%');
+    sql += " AND title LIKE ?";
+    // note the % on both sides for substring matching
+    params.push(`%${req.query.search}%`);
   }
 
   if (req.query.genre) {
