@@ -21,7 +21,7 @@
 | ----------- | ---------------------- |
 |  Title      |       CineTravel       |
 | System URL  |      link_to_system    |
-| Video Link  |      link_to_video     |
+| Video Link  |      https://www.youtube.com/watch?v=lXnrG4Ix8Ro&ab_channel=YUANHAOCHENlink_to_video     |
 
 ## Project Summary
 
