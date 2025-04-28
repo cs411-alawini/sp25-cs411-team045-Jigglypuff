@@ -27,6 +27,24 @@
       <button class="filter-btn" (click)="filterByRating()">Search</button>
     </div>
   </div>
+  
+  <!-- MOVED: Selected country result bar -->
+  <div *ngIf="selectedCountry" class="results">
+    <h2>Selected country: {{ selectedCountry | titlecase }}</h2>
+  </div>
+  
+  <!-- Country buttons -->
+  <div class="location-list">
+    <button
+      *ngFor="let rating of countryRatings"
+      (click)="onSelectCountry(rating.country)"
+      [class.active]="rating.country === selectedCountry"
+      class="location-btn"
+    >
+      <span class="country-name">{{ rating.country | titlecase }}</span>
+      <span class="rating-value">{{ rating.avg_movie_rating }}</span>
+    </button>
+  </div>
   <div class="hotel-update-form">
     <h3>Update Hotel Rating</h3>
     <div class="form-group">
@@ -113,22 +131,4 @@
       </div>
     </div>
   </div>
-  <!-- MOVED: Selected country result bar -->
-  <div *ngIf="selectedCountry" class="results">
-    <h2>Selected country: {{ selectedCountry | titlecase }}</h2>
-  </div>
-  
-  <!-- Country buttons -->
-  <div class="location-list">
-    <button
-      *ngFor="let rating of countryRatings"
-      (click)="onSelectCountry(rating.country)"
-      [class.active]="rating.country === selectedCountry"
-      class="location-btn"
-    >
-      <span class="country-name">{{ rating.country | titlecase }}</span>
-      <span class="rating-value">{{ rating.avg_movie_rating }}</span>
-    </button>
-  </div>
-  
 </div>
