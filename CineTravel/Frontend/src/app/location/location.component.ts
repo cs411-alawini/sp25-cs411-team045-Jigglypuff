@@ -26,14 +26,24 @@ import {
     styleUrls: ['./location.component.css']
   })
   export class LocationComponent implements OnInit, AfterViewInit {
-    title = 'Explore Filming Locations';
+    title = 'Explore Filming & Hotel Locations';
     countryRatings: CountryRating[] = [];
     allCountryRatings: CountryRating[] = []; // 保存所有國家評分的備份
     selectedCountry = '';
     private map: any;
     private marker: any;
+    private infoWindow: any;
     private apiUrl = 'http://localhost:3000/api';
-    
+    countries: any[] = [];
+    selectedUpdateCountry: string = '';
+    countryHotels: any[] = [];
+    selectedHotelId: string = '';
+    currentHotelRating: number = 0;
+    newHotelRating: number = 0;
+    updateMessage: string = '';
+    updateSuccess: boolean = true;
+    ratingHistory: any[] = [];
+    showRatingHistory: boolean = false;
     // 評分過濾參數
     minRating: number = 0;
     maxRating: number = 10;
@@ -60,9 +70,39 @@ import {
     ngOnInit(): void {
       // 載入所有國家評分
       this.loadCountryRatings();
+      this.loadCountries();
+    }
+    getRatingHistory(): void {
+      this.http.get<any[]>(`${this.apiUrl}/rating-history`)
+        .subscribe({
+          next: (history) => {
+            console.log('History data received:', history);
+            this.ratingHistory = history;
+            this.showRatingHistory = true;
+          },
+          error: (err) => {
+            console.error('Error fetching rating history:', err);
+          }
+        });
     }
     
+    // 關閉評分歷史顯示
+    closeRatingHistory(): void {
+      this.showRatingHistory = false;
+    }
     // 載入國家評分數據
+    loadCountries(): void {
+      this.http.get<any[]>(`${this.apiUrl}/countries`)
+        .subscribe({
+          next: (countries) => {
+            this.countries = countries;
+            console.log('Loaded countries for update form:', countries.length);
+          },
+          error: (err) => {
+            console.error('Error loading countries:', err);
+          }
+        });
+    }
     loadCountryRatings(): void {
       this.http.get<CountryRating[]>(`${this.apiUrl}/movie-locations/country-ratings`)
         .subscribe({
@@ -74,7 +114,83 @@ import {
           error: (err) => console.error('無法載入國家評分', err)
         });
     }
+    onUpdateCountryChange(): void {
+      if (!this.selectedUpdateCountry) {
+        this.countryHotels = [];
+        this.selectedHotelId = '';
+        this.currentHotelRating = 0;
+        this.newHotelRating = 0;
+        return;
+      }
+      
+      this.http.get<any[]>(`${this.apiUrl}/hotels/by-country/${this.selectedUpdateCountry}`)
+        .subscribe({
+          next: (hotels) => {
+            this.countryHotels = hotels;
+            console.log(`Loaded ${hotels.length} hotels for ${this.selectedUpdateCountry}`);
+            this.selectedHotelId = '';
+            this.currentHotelRating = 0;
+            this.newHotelRating = 0;
+          },
+          error: (err) => {
+            console.error(`Error loading hotels for ${this.selectedUpdateCountry}:`, err);
+            this.countryHotels = [];
+          }
+        });
+    }
+    onHotelSelect(): void {
+      if (!this.selectedHotelId) {
+        this.currentHotelRating = 0;
+        this.newHotelRating = 0;
+        return;
+      }
+      
+      const selectedHotel = this.countryHotels.find(h => h.Id == this.selectedHotelId);
+      if (selectedHotel) {
+        this.currentHotelRating = selectedHotel.Average_Score;
+        this.newHotelRating = selectedHotel.Average_Score;
+      }
+    }
     
+    // 更新飯店評分
+    updateHotelRating(): void {
+      if (!this.selectedHotelId || !this.newHotelRating) {
+        this.updateMessage = 'Please select a hotel and enter a new rating';
+        this.updateSuccess = false;
+        return;
+      }
+      
+      this.http.put(`${this.apiUrl}/hotels/${this.selectedHotelId}/rating`, { newRating: this.newHotelRating })
+        .subscribe({
+          next: (response: any) => {
+            console.log('Rating updated:', response);
+            this.updateMessage = `Successfully updated hotel rating to ${this.newHotelRating}`;
+            this.updateSuccess = true;
+            
+            // 更新本地數據
+            const hotelIndex = this.countryHotels.findIndex(h => h.Id == this.selectedHotelId);
+            if (hotelIndex !== -1) {
+              this.countryHotels[hotelIndex].Average_Score = this.newHotelRating;
+              this.currentHotelRating = this.newHotelRating;
+            }
+            
+            // 如果是當前選中的國家，重新加載該國家的頂級飯店
+            if (this.selectedUpdateCountry === this.selectedCountry.toLowerCase()) {
+              setTimeout(() => {
+                // 如果信息窗口打開，更新信息
+                if (this.marker && this.marker.map) {
+                  this.fetchTopContentForCountry(this.selectedCountry, this.infoWindow);
+                }
+              }, 500);
+            }
+          },
+          error: (err) => {
+            console.error('Error updating hotel rating:', err);
+            this.updateMessage = err.error?.error || 'Failed to update hotel rating';
+            this.updateSuccess = false;
+          }
+        });
+    }
     // 根據評分範圍過濾國家
     filterByRating(): void {
       // 確保數值有效
@@ -255,7 +371,7 @@ import {
       const infoWindow = new google.maps.InfoWindow({
         content: contentString
       });
-      
+      this.infoWindow = infoWindow;
       // Show info window when marker is clicked
       this.marker.addListener('click', () => {
         infoWindow.open(this.map, this.marker);

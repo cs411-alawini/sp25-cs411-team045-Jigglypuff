@@ -152,3 +152,300 @@
   .filter-btn:hover {
     background-color: #b2070e;
   }
+  .hotel-update-form {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 600px;
+  }
+  
+  .hotel-update-form h3 {
+    color: #fff;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .form-group label {
+    width: 120px;
+    color: #ddd;
+    font-weight: bold;
+  }
+  
+  .form-group select,
+  .form-group input {
+    flex-grow: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .update-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .update-btn:hover {
+    background-color: #b2070e;
+  }
+  
+  .update-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+  
+  .update-message {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .success {
+    background-color: rgba(0, 128, 0, 0.3);
+    color: #90ee90;
+  }
+  
+  .error {
+    background-color: rgba(255, 0, 0, 0.3);
+    color: #ff6b6b;
+  }
+  .rating-history-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .rating-history-content {
+    background-color: #222;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
+    color: #fff;
+  }
+  
+  .close-btn {
+    cursor: pointer;
+    font-size: 24px;
+  }
+  
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .history-table th, .history-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+  }
+  
+  .positive {
+    color: #4caf50;
+  }
+  
+  .negative {
+    color: #f44336;
+  }
+  .rating-history-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* 確保這個值非常高 */
+  }
+  
+  .rating-history-content {
+    background-color: #222;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
+    color: #fff;
+  }
+  
+  .close-btn {
+    cursor: pointer;
+    font-size: 24px;
+    float: right;
+  }
+  
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .history-table th, .history-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+  }
+  
+  .positive {
+    color: #4caf50;
+  }
+  
+  .negative {
+    color: #f44336;
+  }
+  
+  .test-btn {
+    background-color: purple;
+    color: white;
+    padding: 8px 16px;
+    margin: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .history-button-container {
+    text-align: center;
+    margin: 15px 0;
+  }
+  
+  /* 歷史按鈕 */
+  .history-btn {
+    background-color: #444;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+  }
+  
+  .history-btn:hover {
+    background-color: #666;
+  }
+  
+  /* 模態窗口背景 */
+  .history-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* 模態窗口 */
+  .history-modal {
+    background-color: #222;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 模態窗口頭部 */
+  .history-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #333;
+    border-bottom: 1px solid #444;
+  }
+  
+  .history-modal-header h3 {
+    margin: 0;
+    color: white;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  /* 模態窗口主體 */
+  .history-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(80vh - 60px);
+  }
+  
+  /* 歷史表格 */
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+  }
+  
+  .history-table th, 
+  .history-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+  }
+  
+  .history-table th {
+    background-color: #333;
+    font-weight: bold;
+  }
+  
+  .history-table tr:hover {
+    background-color: #333;
+  }
+  
+  /* 正負變化顏色 */
+  .positive {
+    color: #4CAF50;
+  }
+  
+  .negative {
+    color: #F44336;
+  }
+  
+  /* 無記錄提示 */
+  .no-records {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+    font-style: italic;
+  }

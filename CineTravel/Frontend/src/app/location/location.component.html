@@ -27,7 +27,92 @@
       <button class="filter-btn" (click)="filterByRating()">Search</button>
     </div>
   </div>
-  
+  <div class="hotel-update-form">
+    <h3>Update Hotel Rating</h3>
+    <div class="form-group">
+      <label for="countrySelect">Select Country:</label>
+      <select id="countrySelect" [(ngModel)]="selectedUpdateCountry" (change)="onUpdateCountryChange()">
+        <option value="">-- Select Country --</option>
+        <option *ngFor="let country of countries" [value]="country.country_lower">
+          {{ country.Hotel_country }}
+        </option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="hotelSelect">Select Hotel:</label>
+      <select id="hotelSelect" [(ngModel)]="selectedHotelId" (change)="onHotelSelect()">
+        <option value="">-- Select Hotel --</option>
+        <option *ngFor="let hotel of countryHotels" [value]="hotel.Id">
+          {{ hotel.Hotel_Name }} ({{ hotel.City }})
+        </option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="currentRating">Current Rating:</label>
+      <input type="text" id="currentRating" [value]="currentHotelRating" readonly>
+    </div>
+    
+    <div class="form-group">
+      <label for="newRating">New Rating:</label>
+      <input type="number" id="newRating" [(ngModel)]="newHotelRating" min="0" max="10" step="0.1">
+    </div>
+    
+    <button class="update-btn" (click)="updateHotelRating()" [disabled]="!selectedHotelId || !newHotelRating">
+      Apply
+    </button>
+    
+    <div *ngIf="updateMessage" class="update-message" [class.success]="updateSuccess" [class.error]="!updateSuccess">
+      {{ updateMessage }}
+    </div>
+  </div>
+  <!-- 添加歷史記錄按鈕 -->
+  <div class="history-button-container">
+    <button class="history-btn" (click)="getRatingHistory()">
+      View Rating History Records
+    </button>
+  </div>
+
+  <!-- 歷史記錄模態窗口 -->
+  <div *ngIf="showRatingHistory" class="history-modal-backdrop">
+    <div class="history-modal">
+      <div class="history-modal-header">
+        <h3>Rating Change History</h3>
+        <button class="close-button" (click)="closeRatingHistory()">&times;</button>
+      </div>
+      <div class="history-modal-body">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Hotel ID</th>
+              <th>Old Rating</th>
+              <th>New Rating</th>
+              <th>Change</th>
+              <th>Country</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of ratingHistory">
+              <td>{{ record.hotel_id }}</td>
+              <td>{{ record.old_score }}</td>
+              <td>{{ record.new_score }}</td>
+              <td [class.positive]="record.new_score > record.old_score" 
+                  [class.negative]="record.new_score < record.old_score">
+                {{ record.new_score - record.old_score > 0 ? '+' : '' }}{{ (record.new_score - record.old_score).toFixed(1) }}
+              </td>
+              <td>{{ record.country }}</td>
+              <td>{{ record.update_time | date:'medium' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="ratingHistory.length === 0" class="no-records">
+          No rating history records found.
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- MOVED: Selected country result bar -->
   <div *ngIf="selectedCountry" class="results">
     <h2>Selected country: {{ selectedCountry | titlecase }}</h2>
@@ -45,4 +130,5 @@
       <span class="rating-value">{{ rating.avg_movie_rating }}</span>
     </button>
   </div>
+  
 </div>

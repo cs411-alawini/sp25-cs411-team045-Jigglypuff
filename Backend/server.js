@@ -53,8 +53,132 @@ app.get('/api/movies', (req, res) => {
     res.json(results);
   });
 });
+app.get('/api/hotels/top-by-country/:country', (req, res) => {
+  const country = req.params.country.toLowerCase();
+  
+  const sql = `
+    SELECT Hotel_Name, Hotel_Address, Average_Score, City, Id 
+    FROM hotel_country_view 
+    WHERE country_lower = ?
+    ORDER BY Average_Score DESC
+    LIMIT 3
+  `;
+  
+  pool.query(sql, [country], (err, results) => {
+    if (err) {
+      console.error('Error querying top hotels by country:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    console.log(`✅ Retrieved top ${results.length} hotels for ${country}`);
+    res.json(results);
+  });
+});
 
-// 修正: 這個API出現了兩次，移除重複的部分
+// 獲取特定國家的所有飯店列表
+app.get('/api/hotels/by-country/:country', (req, res) => {
+  const country = req.params.country.toLowerCase();
+  
+  const sql = `
+    SELECT Id, Hotel_Name, Hotel_Address, Average_Score, City 
+    FROM hotel_country_view 
+    WHERE country_lower = ?
+    ORDER BY Hotel_Name
+  `;
+  
+  pool.query(sql, [country], (err, results) => {
+    if (err) {
+      console.error('Error querying hotels by country:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    res.json(results);
+  });
+});
+app.get('/api/rating-history', (req, res) => {
+  pool.query('SELECT * FROM hotel_rating_history ORDER BY update_time DESC LIMIT 20', (err, results) => {
+    if (err) {
+      console.error('Error fetching rating history:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    res.json(results);
+  });
+});
+// 獲取特定飯店的詳細資料
+app.get('/api/hotels/:id', (req, res) => {
+  const hotelId = req.params.id;
+  
+  const sql = `
+    SELECT Id, Hotel_Name, Hotel_Address, Average_Score, City, Hotel_country 
+    FROM hotels 
+    WHERE Id = ?
+  `;
+  
+  pool.query(sql, [hotelId], (err, results) => {
+    if (err) {
+      console.error('Error querying hotel details:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Hotel not found' });
+    }
+    
+    res.json(results[0]);
+  });
+});
+
+// 更新飯店評分
+app.put('/api/hotels/:id/rating', (req, res) => {
+  const hotelId = req.params.id;
+  const { newRating } = req.body;
+  
+  // 驗證評分數值
+  const rating = parseFloat(newRating);
+  if (isNaN(rating) || rating < 0 || rating > 10) {
+    return res.status(400).json({ error: 'Invalid rating value' });
+  }
+  
+  const sql = `
+    UPDATE hotels 
+    SET Average_Score = ? 
+    WHERE Id = ?
+  `;
+  
+  pool.query(sql, [rating, hotelId], (err, results) => {
+    if (err) {
+      console.error('Error updating hotel rating:', err);
+      return res.status(500).json({ error: 'Database update failed' });
+    }
+    
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Hotel not found' });
+    }
+    
+    res.json({ 
+      message: 'Hotel rating updated successfully',
+      hotelId,
+      newRating: rating
+    });
+  });
+});
+
+// 獲取所有國家列表
+app.get('/api/countries', (req, res) => {
+  const sql = `
+    SELECT DISTINCT Hotel_country, LOWER(Hotel_country) AS country_lower
+    FROM hotels
+    WHERE Hotel_country IS NOT NULL
+    ORDER BY Hotel_country
+  `;
+  
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching countries:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    
+    res.json(results);
+  });
+});
 app.get('/api/movies/all', (req, res) => {
   const sql = 'SELECT * FROM movie'; 
   pool.query(sql, (err, results) => {
