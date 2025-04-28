@@ -10,7 +10,7 @@ import {
   import { MovieService } from '../services/movie.service';
   import { Movie } from '../movie';
   
-  // 定義國家評分介面
+  // Define the country rating interface
   interface CountryRating {
     country: string;
     avg_movie_rating: number;
@@ -28,7 +28,7 @@ import {
   export class LocationComponent implements OnInit, AfterViewInit {
     title = 'Explore Filming & Hotel Locations';
     countryRatings: CountryRating[] = [];
-    allCountryRatings: CountryRating[] = []; // 保存所有國家評分的備份
+    allCountryRatings: CountryRating[] = []; // Save a backup of all country ratings
     selectedCountry = '';
     private map: any;
     private marker: any;
@@ -44,11 +44,11 @@ import {
     updateSuccess: boolean = true;
     ratingHistory: any[] = [];
     showRatingHistory: boolean = false;
-    // 評分過濾參數
+    // Rating filter parameters
     minRating: number = 0;
     maxRating: number = 10;
     
-    // 國家座標備份
+    // Backup of country coordinates
     private countryCoordinates: {[key: string]: {lat: number, lng: number}} = {
       'usa': {lat: 37.0902, lng: -95.7129},
       'uk': {lat: 55.3781, lng: -3.4360},
@@ -68,7 +68,7 @@ import {
     ) {}
     
     ngOnInit(): void {
-      // 載入所有國家評分
+      // Load all country ratings
       this.loadCountryRatings();
       this.loadCountries();
     }
@@ -86,11 +86,11 @@ import {
         });
     }
     
-    // 關閉評分歷史顯示
+    // Close rating history display
     closeRatingHistory(): void {
       this.showRatingHistory = false;
     }
-    // 載入國家評分數據
+    // Load country rating data
     loadCountries(): void {
       this.http.get<any[]>(`${this.apiUrl}/countries`)
         .subscribe({
@@ -108,10 +108,10 @@ import {
         .subscribe({
           next: (ratings) => {
             this.countryRatings = ratings;
-            this.allCountryRatings = [...ratings]; // 保存所有國家評分的備份
-            console.log('已載入國家評分:', this.countryRatings);
+            this.allCountryRatings = [...ratings]; // Save a backup of all country ratings
+            console.log('Country ratings loaded:', this.countryRatings);
           },
-          error: (err) => console.error('無法載入國家評分', err)
+          error: (err) => console.error('Country ratings loaded failed', err)
         });
     }
     onUpdateCountryChange(): void {
@@ -152,7 +152,7 @@ import {
       }
     }
     
-    // 更新飯店評分
+    // update hotel rating
     updateHotelRating(): void {
       if (!this.selectedHotelId || !this.newHotelRating) {
         this.updateMessage = 'Please select a hotel and enter a new rating';
@@ -167,17 +167,17 @@ import {
             this.updateMessage = `Successfully updated hotel rating to ${this.newHotelRating}`;
             this.updateSuccess = true;
             
-            // 更新本地數據
+            
             const hotelIndex = this.countryHotels.findIndex(h => h.Id == this.selectedHotelId);
             if (hotelIndex !== -1) {
               this.countryHotels[hotelIndex].Average_Score = this.newHotelRating;
               this.currentHotelRating = this.newHotelRating;
             }
             
-            // 如果是當前選中的國家，重新加載該國家的頂級飯店
+           
             if (this.selectedUpdateCountry === this.selectedCountry.toLowerCase()) {
               setTimeout(() => {
-                // 如果信息窗口打開，更新信息
+              
                 if (this.marker && this.marker.map) {
                   this.fetchTopContentForCountry(this.selectedCountry, this.infoWindow);
                 }
@@ -191,15 +191,15 @@ import {
           }
         });
     }
-    // 根據評分範圍過濾國家
+  
     filterByRating(): void {
-      // 確保數值有效
+ 
       this.minRating = Math.max(0, Math.min(this.minRating, 10));
       this.maxRating = Math.max(this.minRating, Math.min(this.maxRating, 10));
       
       console.log(`過濾評分範圍: ${this.minRating} - ${this.maxRating}`);
       
-      // 調用後端 API 獲取過濾結果
+  
       this.http.get<CountryRating[]>(`${this.apiUrl}/movie-locations/country-ratings/filter`, {
         params: {
           minRating: this.minRating.toString(),
@@ -208,12 +208,12 @@ import {
       }).subscribe({
         next: (filteredRatings) => {
           this.countryRatings = filteredRatings;
-          console.log(`已過濾國家數量: ${filteredRatings.length}`);
+          console.log(`Number of countries filtered. ${filteredRatings.length}`);
         },
         error: (err) => {
-          console.error('過濾國家評分錯誤:', err);
+          console.error('Number of countries filtered failed.', err);
           
-          // 如果 API 調用失敗，在前端進行過濾（備用方案）
+        
           this.countryRatings = this.allCountryRatings.filter(rating => 
             rating.avg_movie_rating >= this.minRating && 
             rating.avg_movie_rating <= this.maxRating
@@ -241,10 +241,10 @@ import {
     
     private initMap(): void {
       try {
-        console.log('初始化地圖');
+        console.log('Initialize the map');
         const mapElement = document.getElementById('map');
         if (!mapElement) {
-          console.error('找不到地圖元素');
+          console.error('Map element not found');
           return;
         }
         
@@ -256,9 +256,9 @@ import {
           streetViewControl: true,
           zoomControl: true
         });
-        console.log('地圖已初始化', this.map);
+        console.log('Map initialized', this.map);
       } catch (error) {
-        console.error('地圖初始化錯誤:', error);
+        console.error('Map initialization error.:', error);
       }
     }
     

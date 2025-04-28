@@ -11,7 +11,7 @@ export interface Flight {
   sched_arr_time: string;
   time: string;
   name: string;
-  // … 其他欄位
+
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,7 +20,7 @@ export class FlightService {
 
   constructor(private http: HttpClient) {}
 
-  /** 呼叫存程式，傳入 origin，拿到前 15 筆早於平均出發的航班 */
+  /** Call the stored procedure, pass in the origin, and retrieve the first 15 flights departing earlier than the average departure time. */
   getFlightsBeforeAvg(origin: string): Observable<Flight[]> {
     return this.http.get<Flight[]>(`${this.apiUrl}/beforeAvg/${origin}`);
   }

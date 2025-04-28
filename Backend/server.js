@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 建立 MySQL 連線池
+
 const pool = mysql.createPool({
   host: '127.0.0.1',
   //host: 'localhost',
@@ -47,7 +47,7 @@ app.get('/api/movies', (req, res) => {
   
   pool.query(sql, params, (err, results) => {
     if (err) {
-      console.error('查詢錯誤:', err);
+      console.error('searching error:', err);
       return res.status(500).json({ error: err.message });
     }
     res.json(results);
@@ -69,12 +69,12 @@ app.get('/api/hotels/top-by-country/:country', (req, res) => {
       console.error('Error querying top hotels by country:', err);
       return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ Retrieved top ${results.length} hotels for ${country}`);
+    console.log(`Retrieved top ${results.length} hotels for ${country}`);
     res.json(results);
   });
 });
 
-// 獲取特定國家的所有飯店列表
+// Retrieve the list of all hotels in a specific country
 app.get('/api/hotels/by-country/:country', (req, res) => {
   const country = req.params.country.toLowerCase();
   
@@ -102,7 +102,7 @@ app.get('/api/rating-history', (req, res) => {
     res.json(results);
   });
 });
-// 獲取特定飯店的詳細資料
+// Retrieve the detailed information of a specific hotel.
 app.get('/api/hotels/:id', (req, res) => {
   const hotelId = req.params.id;
   
@@ -126,12 +126,12 @@ app.get('/api/hotels/:id', (req, res) => {
   });
 });
 
-// 更新飯店評分
+// Update the hotel rating
 app.put('/api/hotels/:id/rating', (req, res) => {
   const hotelId = req.params.id;
   const { newRating } = req.body;
   
-  // 驗證評分數值
+  // Validate the rating value
   const rating = parseFloat(newRating);
   if (isNaN(rating) || rating < 0 || rating > 10) {
     return res.status(400).json({ error: 'Invalid rating value' });
@@ -161,7 +161,7 @@ app.put('/api/hotels/:id/rating', (req, res) => {
   });
 });
 
-// 獲取所有國家列表
+// Retrieve the list of all countries
 app.get('/api/countries', (req, res) => {
   const sql = `
     SELECT DISTINCT Hotel_country, LOWER(Hotel_country) AS country_lower
@@ -183,11 +183,11 @@ app.get('/api/movies/all', (req, res) => {
   const sql = 'SELECT * FROM movie'; 
   pool.query(sql, (err, results) => {
     if (err) {
-      console.error('🎯 SQL Error:', err.code, err.sqlMessage);
-      console.error('📋 Executed SQL:', err.sql);
+      console.error('SQL Error:', err.code, err.sqlMessage);
+      console.error('Executed SQL:', err.sql);
       return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ Retrieved ${results.length} movies`);
+    console.log(`Retrieved ${results.length} movies`);
     res.json(results);
   });
 });
@@ -207,7 +207,7 @@ app.get('/api/hotels/top-by-country/:country', (req, res) => {
       console.error('Error querying top hotels by country:', err);
       return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ Retrieved top ${results.length} hotels for ${country}`);
+    console.log(`Retrieved top ${results.length} hotels for ${country}`);
     res.json(results);
   });
 });
@@ -228,7 +228,7 @@ app.get('/api/movies/top-by-country/:country', (req, res) => {
       console.error('Error querying top movies by country:', err);
       return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ Retrieved top ${results.length} movies for ${country}`);
+    console.log(`Retrieved top ${results.length} movies for ${country}`);
     res.json(results);
   });
 });
@@ -247,7 +247,7 @@ app.get('/api/movie-locations/country-ratings', (req, res) => {
       console.error('Error querying country ratings:', err);
       return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ Retrieved average movie ratings for ${results.length} countries`);
+    console.log(`Retrieved average movie ratings for ${results.length} countries`);
     res.json(results);
   });
 });
@@ -270,7 +270,7 @@ app.get('/api/movie-locations/country-ratings/filter', (req, res) => {
       console.error('Error filtering country ratings:', err);
       return res.status(500).json({ error: 'Database query failed' });
     }
-    console.log(`✅ Retrieved ${results.length} countries with ratings (range: ${minRating}-${maxRating})`);
+    console.log(`Retrieved ${results.length} countries with ratings (range: ${minRating}-${maxRating})`);
     res.json(results);
   });
 });
@@ -292,7 +292,7 @@ app.get('/api/flights/beforeAvg/:origin', (req, res) => {
   });
 });
 
-// Better API route in server.js
+// list of cities with both airports and movie locations
 app.get('/api/cities', (req, res) => {
   const sql = `
     SELECT DISTINCT LOWER(a.City) AS city
@@ -359,7 +359,7 @@ app.post('/api/favorites', (req, res) => {
 
 /**
  * GET  /api/favorites
- * 回傳 favorite table 全部資料
+ * return favorite table all data
  */
 app.get('/api/favorites', (req, res) => {
   pool.query('SELECT * FROM favorite', (err, rows) => {
@@ -373,7 +373,7 @@ app.get('/api/favorites', (req, res) => {
 
 /**
  * DELETE /api/favorites/:movieId
- * 以電影 Id_movies 刪除收藏
+ *  Id_movies delete or favorite
  */
 app.delete('/api/favorites/:movieId', (req, res) => {
   const movieId = req.params.movieId;
@@ -382,7 +382,7 @@ app.delete('/api/favorites/:movieId', (req, res) => {
     [movieId],
     (err) => {
       if (err) {
-        console.error('刪除收藏失敗:', err);
+        console.error('Failed to delete favorite:', err);
         return res.status(500).json({ error: err.message });
       }
       res.json({ message: 'Removed from favorite' });

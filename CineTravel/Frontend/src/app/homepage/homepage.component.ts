@@ -74,10 +74,10 @@ export class HomepageComponent implements OnInit {
     }).subscribe({
       next: (movies: Movie[]) => {
         this.filteredMovies = movies;
-        // 如果需要，你也可以根據返回結果動態產生篩選選項
+      
       },
       error: (err) => {
-        console.error('搜尋電影時發生錯誤:', err);
+        console.error('An error occurred while searching for movies', err);
       }
     });
   }
