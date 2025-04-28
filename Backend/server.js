@@ -349,7 +349,7 @@ app.post('/api/favorites', (req, res) => {
     [movieId, title],
     (err) => {
       if (err) {
-        console.error('加入收藏失敗:', err);
+        console.error('fail to load favorites:', err);
         return res.status(500).json({ error: err.message });
       }
       res.status(201).json({ message: 'Added to favorite' });
@@ -364,7 +364,7 @@ app.post('/api/favorites', (req, res) => {
 app.get('/api/favorites', (req, res) => {
   pool.query('SELECT * FROM favorite', (err, rows) => {
     if (err) {
-      console.error('讀取收藏失敗:', err);
+      console.error('fail to load favorites:', err);
       return res.status(500).json({ error: err.message });
     }
     res.json(rows);
