@@ -10,6 +10,15 @@
 
 
     <!--search area-->
+    <div class="search-filter">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search by title..."
+        class="search-box"
+      />
+    </div>
     <div class="filter-container">
 
       <label for="year">Year:</label>
